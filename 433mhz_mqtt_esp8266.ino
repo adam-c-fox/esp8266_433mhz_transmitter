@@ -8,6 +8,8 @@
 WiFiClient wifiClient;
 PubSubClient client(mqtt_server, mqtt_port, wifiClient);
 RCSwitch mySwitch = RCSwitch();
+unsigned long bootTime = 0;
+int interval = 3600000; //60 mins
 
 void callback(char* topic, byte* payload, unsigned int length) {
  Serial.print("Message arrived [");
@@ -40,6 +42,9 @@ void setup() {
   client.subscribe("433transmitter/rfcode");
   client.setCallback(callback);
   mySwitch.enableTransmit(0); //argument is pin
+
+  //Set boot time
+  bootTime = millis();
 }
 
 void loop() {
@@ -49,6 +54,13 @@ void loop() {
   }
   client.loop();
 
+
+  //Auto restart every hour
+  unsigned long currentTime = millis();
+  if ((currentTime - bootTime) > interval) {
+    ESP.restart();
+  }
+  
 }
 
 void transmit(int code) {
