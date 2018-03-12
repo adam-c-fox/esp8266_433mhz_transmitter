@@ -50,7 +50,8 @@ void setup() {
 void loop() {
   
   if (!client.connected()) {
-  wifiConnect();
+    wifiConnect();
+    mqttConnect();
   }
   client.loop();
 
