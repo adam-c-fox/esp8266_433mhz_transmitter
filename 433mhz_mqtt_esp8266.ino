@@ -39,8 +39,6 @@ void setup() {
   wifiConnect();
   mqttConnect();
   
-  client.subscribe("433transmitter/rfcode");
-  client.setCallback(callback);
   mySwitch.enableTransmit(0); //argument is pin
 
   //Set boot time
@@ -52,6 +50,7 @@ void loop() {
   if (!client.connected()) {
     wifiConnect();
     mqttConnect();
+    delay(2000);
   }
   client.loop();
 
@@ -88,6 +87,10 @@ void mqttConnect() {
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("Connecting to MQTT server");
       if (client.connect(mqtt_client_name)) {
+
+        client.subscribe("433transmitter/rfcode");
+        client.setCallback(callback);
+        
         Serial.println("Connected to MQTT server");
       } else {
         Serial.println("Could not connect to MQTT server");   
